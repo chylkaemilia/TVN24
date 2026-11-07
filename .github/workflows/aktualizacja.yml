@@ -3,7 +3,7 @@ name: Aktualizacja aktualnosci Newag
 on:
   schedule:
     # 6:00 UTC = 7:00 w Polsce zimą, 8:00 latem
-    - cron: "0 6 * * *"
+    - cron: "0 * * * *"
   workflow_dispatch:      # pozwala uruchomić ręcznie przyciskiem
 
 permissions:
