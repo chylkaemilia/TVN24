@@ -1,0 +1,51 @@
+name: Aktualizacja aktualnosci Newag
+
+on:
+  schedule:
+    # 6:00 UTC = 7:00 w Polsce zimą, 8:00 latem
+    - cron: "0 6 * * *"
+  workflow_dispatch:      # pozwala uruchomić ręcznie przyciskiem
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  budowanie:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pobierz repozytorium
+        uses: actions/checkout@v4
+
+      - name: Ustaw Pythona
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Zainstaluj biblioteki
+        run: pip install -r requirements.txt
+
+      - name: Uruchom skrypt
+        run: python generuj.py
+
+      - name: Przygotuj pliki strony
+        run: |
+          mkdir -p strona
+          cp index.html strona/
+
+      - name: Wyslij do GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: strona
+
+  publikacja:
+    needs: budowanie
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.wdrozenie.outputs.page_url }}
+    steps:
+      - name: Opublikuj
+        id: wdrozenie
+        uses: actions/deploy-pages@v4
